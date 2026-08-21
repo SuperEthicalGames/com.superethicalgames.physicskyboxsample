@@ -1,0 +1,10 @@
+{
+    "name": "Superethicalgamesmt0kkk72.Physicsskyboxsample.Editor",
+    "references": [
+      "Superethicalgamesmt0kkk72.Physicsskyboxsample"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

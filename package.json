@@ -1,0 +1,19 @@
+{
+  "name": "com.superethicalgamesstudio.physicsskyboxsample",
+  "displayName": "Super Ethical Games",
+  "version": "0.1.0",
+  "unity": "6000.4",
+  "unityRelease": "2f1",
+  "description": "An educational Unity package focused on understanding HLSL and Shader Graph through practical skybox examples. It provides a hands-on environment for exploring shader concepts, understanding how HLSL code works behind Shader Graph, and learning how procedural and customizable skybox effects are built.",
+  "dependencies": {
+    "com.unity.test-framework": "1.6.0"
+  },
+  "author": {
+    "name": "Super Ethical Games Studio",
+    "url": "sego-thedevlab.github.io",
+    "email": "superethicalgames@outlook.com"
+  },
+  "changelogUrl": "https://example.com/changelog.html",
+  "documentationUrl": "https://example.com/",
+  "licensesUrl": "https://example.com/licensing.html"
+}
