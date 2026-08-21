@@ -121,10 +121,6 @@ public class AstronomicalTimeSystem : MonoBehaviour
     [SerializeField]
     private bool _UpdateSkyboxStars = true;
 
-    [Tooltip("Multiplicador opcional. 1 = velocidad astronómica real.")]
-    [SerializeField]
-    private double _StarSpeedMultiplier = 1.0;
-
 
     // ============================================================
     // DEBUG
@@ -592,13 +588,13 @@ public class AstronomicalTimeSystem : MonoBehaviour
     {
         Shader.SetGlobalVector(
             SunDirID,
-            -sunDirection
+            sunDirection
         );
 
 
         Shader.SetGlobalVector(
             MoonDirID,
-            -moonDirection
+            moonDirection
         );
 
 

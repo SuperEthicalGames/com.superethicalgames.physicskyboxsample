@@ -1,0 +1,11 @@
+{
+    "name": "Superethicalgamesmt0kkk72.Physicsskyboxsample.Tests",
+    "references": [
+        "Superethicalgamesmt0kkk72.Physicsskyboxsample"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}

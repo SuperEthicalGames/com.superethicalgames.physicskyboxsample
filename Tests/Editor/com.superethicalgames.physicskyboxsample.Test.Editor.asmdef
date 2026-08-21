@@ -1,0 +1,14 @@
+{
+    "name": "Superethicalgamesmt0kkk72.Physicsskyboxsample.Editor.Tests",
+    "references": [
+        "Superethicalgamesmt0kkk72.Physicsskyboxsample.Editor",
+        "Superethicalgamesmt0kkk72.Physicsskyboxsample"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
