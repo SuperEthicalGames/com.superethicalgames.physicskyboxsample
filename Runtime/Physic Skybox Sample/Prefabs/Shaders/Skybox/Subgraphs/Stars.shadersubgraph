@@ -487,20 +487,6 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "89ca0249bdbe407d8a6227e65f74fa39"
-                },
-                "m_SlotId": 1
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "fa7ccef5159e46f0878dadc025b316f7"
-                },
-                "m_SlotId": 0
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
                     "m_Id": "93a855bcc6ec44a8ba7578bec64e417b"
                 },
                 "m_SlotId": 2
@@ -802,6 +788,20 @@
             "m_InputSlot": {
                 "m_Node": {
                     "m_Id": "89ca0249bdbe407d8a6227e65f74fa39"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "fa4c094ea88e425cbed5f0e6ec6aa6f3"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "fa7ccef5159e46f0878dadc025b316f7"
                 },
                 "m_SlotId": 0
             }
@@ -2343,10 +2343,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "Star Power",
+    "m_Name": "Star Exposure",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Star Power",
-    "m_DefaultReferenceName": "_Star_Power",
+    "m_RefNameGeneratedByDisplayName": "Star Exposure",
+    "m_DefaultReferenceName": "_Star_Exposure",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -2440,7 +2440,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "5200441fee454577ba01174c8dc1eefb",
     "m_Id": 0,
-    "m_DisplayName": "Star Power",
+    "m_DisplayName": "Star Exposure",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -2797,9 +2797,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1821.0,
-            "y": 671.0,
-            "width": 132.0,
+            "x": -1836.9998779296875,
+            "y": 647.9999389648438,
+            "width": 148.0,
             "height": 34.0
         }
     },
@@ -4022,10 +4022,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "Star Exposure",
+    "m_Name": "Star Power",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Star Exposure",
-    "m_DefaultReferenceName": "_Star_Exposure",
+    "m_RefNameGeneratedByDisplayName": "Star Power",
+    "m_DefaultReferenceName": "_Star_Power",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -4162,7 +4162,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "aee7f179086d416b90c51d2097a0f094",
     "m_Id": 0,
-    "m_DisplayName": "Star Exposure",
+    "m_DisplayName": "Star Power",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",

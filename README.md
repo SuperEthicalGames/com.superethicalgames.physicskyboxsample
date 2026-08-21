@@ -1,1 +1,2 @@
 An educational Unity package focused on understanding HLSL and Shader Graph through practical skybox examples. It provides a hands-on environment for exploring shader concepts, understanding how HLSL code works behind Shader Graph, and learning how procedural and customizable skybox effects are built.
+

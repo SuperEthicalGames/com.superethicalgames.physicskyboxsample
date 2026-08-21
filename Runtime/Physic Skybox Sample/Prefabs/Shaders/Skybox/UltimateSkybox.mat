@@ -116,7 +116,7 @@ Material:
     - _Cloud_Intensity: 1
     - _Cloud_Scale: 15
     - _Cloud_Scatter_Scale: 5
-    - _Cloud_Scattering: 0.15
+    - _Cloud_Scattering: 0
     - _Cull: 2
     - _DstBlend: 0
     - _DstBlendAlpha: 0
@@ -127,9 +127,9 @@ Material:
     - _QueueOffset: 0
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
-    - _Star_Exposure: 5
+    - _Star_Exposure: 1
     - _Star_Latitude: 4
-    - _Star_Power: 1.41
+    - _Star_Power: 2
     - _Star_Sidereal_Time: 0.0005
     - _Star_Speed: 0.001
     - _Sun_Radius: 0.05
@@ -141,7 +141,7 @@ Material:
     - _Cloud_Color: {r: 0, g: 169.07007, b: 492.67926, a: 1}
     - _Cloud_Scatter_Speed: {r: 0.05, g: 0.05, b: 0, a: 0}
     - _Cloud_Speed: {r: -0.001, g: 0.001, b: 0, a: 0}
-    - _Constellation_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Constellation_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Moon_Direction: {r: 0.5043202, g: 0.81830025, b: 0.27576423, a: 0}
     - _Moon_Space_Matrix: {r: 0, g: 0, b: 0, a: 0}
     - _Pan_Speed: {r: -0.05, g: 0.05, b: 0, a: 0}

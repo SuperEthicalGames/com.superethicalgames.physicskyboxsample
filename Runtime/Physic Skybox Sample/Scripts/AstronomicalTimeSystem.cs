@@ -57,6 +57,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
     [Header("MANUAL DATE")]
 
+    [Tooltip("La fecha/hora manual representa HORA LOCAL del dispositivo.")]
     [SerializeField]
     private int _Year = 2026;
 
@@ -66,11 +67,11 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
     [Range(1, 31)]
     [SerializeField]
-    private int _Day = 20;
+    private int _Day = 21;
 
     [Range(0, 23)]
     [SerializeField]
-    private int _Hour = 12;
+    private int _Hour = 6;
 
     [Range(0, 59)]
     [SerializeField]
@@ -121,6 +122,10 @@ public class AstronomicalTimeSystem : MonoBehaviour
     [SerializeField]
     private bool _UpdateSkyboxStars = true;
 
+    [Tooltip("1 = velocidad astronómica real.")]
+    [SerializeField]
+    private double _StarSpeedMultiplier = 1.0;
+
 
     // ============================================================
     // DEBUG
@@ -146,6 +151,12 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
     [SerializeField]
     private string _CurrentUTCTime;
+
+    [SerializeField]
+    private string _DeviceTimeZone;
+
+    [SerializeField]
+    private double _DeviceUTCOffsetHours;
 
 
     // ============================================================
@@ -264,7 +275,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
         }
         else
         {
-            _CurrentUTC = CreateManualDate();
+            _CurrentUTC = CreateManualDateAsUTC();
         }
 
         _initialized = true;
@@ -283,18 +294,30 @@ public class AstronomicalTimeSystem : MonoBehaviour
     {
         switch (_TimeMode)
         {
+            // ----------------------------------------------------
+            // REAL DEVICE TIME
+            // ----------------------------------------------------
+
             case TimeMode.RealTime:
 
+                // SIEMPRE usamos UTC internamente.
+                // DateTime.UtcNow viene directamente del reloj
+                // del dispositivo convertido a UTC.
                 _CurrentUTC = DateTime.UtcNow;
 
                 break;
 
 
+            // ----------------------------------------------------
+            // MANUAL LOCAL TIME
+            // ----------------------------------------------------
+
             case TimeMode.Manual:
 
                 if (ManualValuesChanged())
                 {
-                    _CurrentUTC = CreateManualDate();
+                    _CurrentUTC =
+                        CreateManualDateAsUTC();
 
                     CacheManualValues();
                 }
@@ -302,11 +325,16 @@ public class AstronomicalTimeSystem : MonoBehaviour
                 break;
 
 
+            // ----------------------------------------------------
+            // SIMULATED
+            // ----------------------------------------------------
+
             case TimeMode.Simulated:
 
                 _CurrentUTC =
                     _CurrentUTC.AddSeconds(
-                        _TimeScale * Time.deltaTime
+                        _TimeScale *
+                        Time.deltaTime
                     );
 
                 break;
@@ -315,10 +343,41 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
     // ============================================================
-    // MANUAL DATE
+    // DEVICE LOCAL TIME
     // ============================================================
 
-    private DateTime CreateManualDate()
+    private DateTime GetDeviceLocalTime()
+    {
+        TimeZoneInfo localZone =
+            TimeZoneInfo.Local;
+
+        return TimeZoneInfo.ConvertTimeFromUtc(
+            _CurrentUTC,
+            localZone
+        );
+    }
+
+
+    // ============================================================
+    // DEVICE TIMEZONE
+    // ============================================================
+
+    private TimeSpan GetDeviceUtcOffset()
+    {
+        TimeZoneInfo localZone =
+            TimeZoneInfo.Local;
+
+        return localZone.GetUtcOffset(
+            _CurrentUTC
+        );
+    }
+
+
+    // ============================================================
+    // MANUAL DATE -> UTC
+    // ============================================================
+
+    private DateTime CreateManualDateAsUTC()
     {
         int year =
             Mathf.Clamp(
@@ -368,13 +427,34 @@ public class AstronomicalTimeSystem : MonoBehaviour
                 59
             );
 
-        return new DateTime(
-            year,
-            month,
-            day,
-            hour,
-            minute,
-            second,
+
+        // La hora manual representa la hora LOCAL
+        // del dispositivo.
+        DateTime localDate =
+            new DateTime(
+                year,
+                month,
+                day,
+                hour,
+                minute,
+                second,
+                DateTimeKind.Unspecified
+            );
+
+
+        // Convertimos esa hora local a UTC.
+        TimeZoneInfo localZone =
+            TimeZoneInfo.Local;
+
+        DateTime utc =
+            TimeZoneInfo.ConvertTimeToUtc(
+                localDate,
+                localZone
+            );
+
+
+        return DateTime.SpecifyKind(
+            utc,
             DateTimeKind.Utc
         );
     }
@@ -437,11 +517,19 @@ public class AstronomicalTimeSystem : MonoBehaviour
         }
 
 
+        // --------------------------------------------------------
+        // JULIAN DATE
+        // --------------------------------------------------------
+
         double julianDate =
             CalculateJulianDate(
                 _CurrentUTC
             );
 
+
+        // --------------------------------------------------------
+        // LOCAL SIDEREAL TIME
+        // --------------------------------------------------------
 
         double siderealTime =
             CalculateLocalSiderealTime(
@@ -541,7 +629,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
         // ========================================================
-        // SKYBOX
+        // SKYBOX GLOBALS
         // ========================================================
 
         UpdateSkyboxGlobals(
@@ -557,22 +645,38 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
         if (_DisplayDebugInfo)
         {
+            DateTime localTime =
+                GetDeviceLocalTime();
+
+            TimeSpan utcOffset =
+                GetDeviceUtcOffset();
+
+
             _CurrentUTCTime =
                 _CurrentUTC.ToString(
                     "yyyy-MM-dd HH:mm:ss"
                 );
 
+
             _CurrentLocalTime =
-                _CurrentUTC
-                    .ToLocalTime()
-                    .ToString(
-                        "yyyy-MM-dd HH:mm:ss"
-                    );
+                localTime.ToString(
+                    "yyyy-MM-dd HH:mm:ss"
+                );
+
+
+            _DeviceTimeZone =
+                TimeZoneInfo.Local.Id;
+
+
+            _DeviceUTCOffsetHours =
+                utcOffset.TotalHours;
         }
         else
         {
             _CurrentUTCTime = "";
             _CurrentLocalTime = "";
+            _DeviceTimeZone = "";
+            _DeviceUTCOffsetHours = 0;
         }
     }
 
@@ -586,17 +690,29 @@ public class AstronomicalTimeSystem : MonoBehaviour
         Vector3 moonDirection,
         double siderealTime)
     {
+        // --------------------------------------------------------
+        // SUN
+        // --------------------------------------------------------
+
         Shader.SetGlobalVector(
             SunDirID,
             sunDirection
         );
 
 
+        // --------------------------------------------------------
+        // MOON
+        // --------------------------------------------------------
+
         Shader.SetGlobalVector(
             MoonDirID,
             moonDirection
         );
 
+
+        // --------------------------------------------------------
+        // MOON SPACE
+        // --------------------------------------------------------
 
         if (_Moon != null)
         {
@@ -615,6 +731,10 @@ public class AstronomicalTimeSystem : MonoBehaviour
         }
 
 
+        // --------------------------------------------------------
+        // STARS
+        // --------------------------------------------------------
+
         if (_UpdateSkyboxStars)
         {
             Shader.SetGlobalFloat(
@@ -627,6 +747,19 @@ public class AstronomicalTimeSystem : MonoBehaviour
                 NormalizeDegrees(
                     siderealTime
                 ) / 360.0;
+
+
+            normalizedSiderealTime *=
+                _StarSpeedMultiplier;
+
+
+            normalizedSiderealTime =
+                normalizedSiderealTime %
+                1.0;
+
+
+            if (normalizedSiderealTime < 0)
+                normalizedSiderealTime += 1.0;
 
 
             Shader.SetGlobalFloat(
@@ -650,10 +783,12 @@ public class AstronomicalTimeSystem : MonoBehaviour
                 Vector3.up
             );
 
+
         rotation *=
             Quaternion.Euler(
                 _SunRotationOffset
             );
+
 
         _Sun.rotation =
             rotation;
@@ -673,10 +808,12 @@ public class AstronomicalTimeSystem : MonoBehaviour
                 Vector3.up
             );
 
+
         rotation *=
             Quaternion.Euler(
                 _MoonRotationOffset
             );
+
 
         _Moon.rotation =
             rotation;
@@ -690,11 +827,19 @@ public class AstronomicalTimeSystem : MonoBehaviour
     private double CalculateJulianDate(
         DateTime date)
     {
+        date =
+            DateTime.SpecifyKind(
+                date,
+                DateTimeKind.Utc
+            );
+
+
         int year =
             date.Year;
 
         int month =
             date.Month;
+
 
         double day =
             date.Day
@@ -717,6 +862,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
         int A =
             year / 100;
+
 
         int B =
             2 -
@@ -770,7 +916,9 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
         double gRad =
-            DegreesToRadians(g);
+            DegreesToRadians(
+                g
+            );
 
 
         double lambda =
@@ -797,10 +945,15 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
         double lambdaRad =
-            DegreesToRadians(lambda);
+            DegreesToRadians(
+                lambda
+            );
+
 
         double epsilonRad =
-            DegreesToRadians(epsilon);
+            DegreesToRadians(
+                epsilon
+            );
 
 
         double rightAscension =
@@ -919,13 +1072,21 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
         double NRad =
-            DegreesToRadians(N);
+            DegreesToRadians(
+                N
+            );
+
 
         double iRad =
-            DegreesToRadians(i);
+            DegreesToRadians(
+                i
+            );
+
 
         double wRad =
-            DegreesToRadians(w);
+            DegreesToRadians(
+                w
+            );
 
 
         double xh =
@@ -967,12 +1128,14 @@ public class AstronomicalTimeSystem : MonoBehaviour
         double xe =
             xh;
 
+
         double ye =
             yh *
             Math.Cos(epsilon)
             -
             zh *
             Math.Sin(epsilon);
+
 
         double ze =
             yh *
@@ -1034,8 +1197,8 @@ public class AstronomicalTimeSystem : MonoBehaviour
             );
 
 
-        if (hourAngle > 180)
-            hourAngle -= 360;
+        if (hourAngle > 180.0)
+            hourAngle -= 360.0;
 
 
         double H =
@@ -1066,10 +1229,12 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
 
         sinAltitude =
-            Mathf.Clamp(
-                (float)sinAltitude,
-                -1f,
-                1f
+            Math.Max(
+                -1.0,
+                Math.Min(
+                    1.0,
+                    sinAltitude
+                )
             );
 
 
@@ -1104,7 +1269,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
 
         azimuth =
             NormalizeDegrees(
-                azimuth + 180
+                azimuth + 180.0
             );
 
 
@@ -1213,7 +1378,8 @@ public class AstronomicalTimeSystem : MonoBehaviour
         double M,
         double eccentricity)
     {
-        double E = M;
+        double E =
+            M;
 
 
         for (int i = 0; i < 12; i++)
@@ -1249,8 +1415,10 @@ public class AstronomicalTimeSystem : MonoBehaviour
     {
         value %= 360.0;
 
+
         if (value < 0)
             value += 360.0;
+
 
         return value;
     }
@@ -1309,6 +1477,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
             Gizmos.color =
                 Color.yellow;
 
+
             Gizmos.DrawRay(
                 transform.position,
                 -_Sun.forward * 10f
@@ -1320,6 +1489,7 @@ public class AstronomicalTimeSystem : MonoBehaviour
         {
             Gizmos.color =
                 Color.white;
+
 
             Gizmos.DrawRay(
                 transform.position,
